@@ -1,11 +1,15 @@
 from display_sim import SimDisplay
+import psutil
 
 display = SimDisplay()
 select = 0  # Ausgewählter Button (0–4)
 
 def draw_buttons():
     display.clear("black")
-    
+
+    # CPU-Auslastung anzeigen
+    #display.draw.text((10, 200), f"{psutil.cpu_percent()}%", fill="white")
+
     button_width = 40
     spacing = 6
     total_width = 5 * button_width + 4 * spacing 

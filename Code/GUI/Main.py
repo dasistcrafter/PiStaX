@@ -1,5 +1,5 @@
 from display_sim import SimDisplay
-import psutil
+from PIL import ImageFont
 
 display = SimDisplay()
 select = 0  # Ausgewählter Button (0–4)
@@ -7,8 +7,6 @@ select = 0  # Ausgewählter Button (0–4)
 def draw_buttons():
     display.clear("black")
 
-    # CPU-Auslastung anzeigen
-    #display.draw.text((10, 200), f"{psutil.cpu_percent()}%", fill="white")
 
     button_width = 40
     spacing = 6

@@ -7,7 +7,7 @@ from PIL import ImageFont
 font_small = ImageFont.truetype("arial.ttf", 16)
 
 # Schriftgröße 24 fett (bold)
-font_normal = ImageFont.truetype("arial.ttf", 20)  # Arial Bold
+font_normal = ImageFont.truetype("arial.ttf", 18)  # Arial Bold
 
 # Schriftgröße 18 kursiv
 font_big = ImageFont.truetype("arialbd.ttf", 22)  # Arial Italic
@@ -26,7 +26,7 @@ def draw_buttons():
 
     font_to_use = font_big if cursor == 2 else font_normal if cursor in [1, 3] else font_small
     display.draw.text((10, 60), "Test2", font=font_to_use , fill="white")
-
+""""
     font_to_use = font_big if cursor == 3 else font_normal if cursor in [2, 4] else font_small
     display.draw.text((10, 80), "Test3", font=font_to_use , fill="white")
 
@@ -34,10 +34,10 @@ def draw_buttons():
     display.draw.text((10, 100), "Test4", font=font_to_use , fill="white")
 
     font_to_use = font_big if cursor == 5 else font_normal if cursor in [4, 6] else font_small
-    display.draw.text((10, 120), "Test5", font=font_to_use , fill="white")
+    display.draw.text((10, 120), "Show Temp", font=font_to_use , fill="white")
 
     font_to_use = font_big if cursor == 6 else font_normal if cursor in [5, 7] else font_small
-    display.draw.text((10, 140), "Test6", font=font_to_use , fill="white")
+    display.draw.text((10, 140), "Show Usage", font=font_to_use , fill="white")
 
     font_to_use = font_big if cursor == 7 else font_normal if cursor in [6, 8] else font_small
     display.draw.text((10, 160), "Test7", font=font_to_use , fill="white")
@@ -50,6 +50,8 @@ def draw_buttons():
 
     font_to_use = font_big if cursor == 10 else font_normal if cursor in [9, 11] else font_small
     display.draw.text((10, 220), "Test10", font=font_to_use , fill="white")
+""""
+
 
     display.show()
 
@@ -66,6 +68,9 @@ def on_key(event):
 
 
     draw_buttons()
+
+
+
 
 # Tasteneingaben aktivieren
 display.window.bind("<Key>", on_key)

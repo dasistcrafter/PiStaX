@@ -25,8 +25,7 @@ main_menu_entries = [
     "Show Usage",
     "Test7",
     "Test8",
-    "Test9",
-    "Test10"
+    "Test9"
 ]
 
 home_menu_entries = [
@@ -34,13 +33,10 @@ home_menu_entries = [
     "Ram usage",
     "CPU temp",
     "Storage usage",
-]
-
-home_menu_entries_true = [
-    "CPU_usage",
-    "Ram_usage",
-    "CPU_temp",
-    "Storage_usage",
+    "Time",
+    "Date",
+    "Location",
+    "weather"
 ]
 
 cursor = 0
@@ -104,8 +100,11 @@ def home_menue():
 
         display.draw.text((10, y), label, font=font, fill="white")
 
+        if i > 6:
+            y -= 30 * i
 
-        if data.get(home_menu_entries_true[i]) == True:
+
+        if data.get(home_menu_entries[i]) == True:
             fill_color = "white"
         else:
             fill_color = "black"
@@ -139,7 +138,7 @@ def on_key(event):
             current_screen = home_menue
 
         elif current_screen == home_menue:
-            key_name = home_menu_entries_true[cursor]
+            key_name = home_menu_entries[cursor]
             data[key_name] = not data.get(key_name, False)
             print(f"{key_name}: {data[key_name]}")
             #save

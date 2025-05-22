@@ -1,10 +1,12 @@
 from display_sim import SimDisplay
 from PIL import ImageFont
 import json
+import psutil
 
 
-font_stats = ImageFont.truetype("arial.ttf", 10)
-font_time = ImageFont.truetype("arial.ttf", 10)
+
+font_stats = ImageFont.truetype("arial.ttf",14)
+font_time = ImageFont.truetype("arialbd.ttf", 14)
 
 # load settings data
 with open("settings.json", "r") as f:
@@ -45,14 +47,32 @@ def show_stats():
     stats_shown = 1
     # Beispielhafte Textanzeige, falls "Time" aktiviert ist
     if data.get("Time") == True:
-        display.draw.text((195, 10), "MM:HH", font=font_small, fill="white")
+        display.draw.text((185, 10), "MM:HH", font=font_time, fill="white")
 
     if data.get("Date") == True:
-        display.draw.text((10, 10), "DD:MM:YYYY", font=font_small, fill="white")
+        display.draw.text((10, 10), "DD:MM:YYYY", font=font_time, fill="white")
 
     if data.get("CPU_usage") == True:
         stats_shown += 1
-        display.draw.text((10,(stats_shown * 20) + 100 ), "CPU: XX%", font=font_small, fill="white")
+        display.draw.text((10, (stats_shown * 20) + 100),f"CPU: {psutil.cpu_percent(interval=None)}%",font=font_stats,fill="white")
+
+    if data.get("CPU_temp") == True:
+        frequency_all = psutil.cpu_freq(percpu=False)
+        frequency_current = frequency_all[17:23]
+        stats_shown += 1
+        display.draw.text((10,(stats_shown * 20) + 100 ), f"CPU frequency:  {frequency_current}", font=font_stats, fill="white")
+        stats_shown += 1
+        print(frequency_current)
+        print(psutil.cpu_freq(percpu=False))
+    
+    if data.get("RAM_usage") == True:
+        stats_shown += 1
+        display.draw.text((10,(stats_shown * 20) + 100 ), "RAM: XX%", font=font_stats, fill="white")
+        print(stats_y)
+    
+    if data.get("Storage_usage") == True:
+        stats_shown += 1
+        display.draw.text((10,(stats_shown * 20) + 100 ), "Storage: XX %", font=font_stats, fill="white")
         print(stats_y)
 
 def on_key(event):

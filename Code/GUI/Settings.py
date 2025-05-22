@@ -29,10 +29,10 @@ main_menu_entries = [
 ]
 
 home_menu_entries = [
-    "CPU usage",
-    "Ram usage",
-    "CPU temp",
-    "Storage usage",
+    "CPU_usage",
+    "Ram_usage",
+    "CPU_temp",
+    "Storage_usage",
     "Time",
     "Date",
     "Location",
@@ -81,8 +81,15 @@ def home_menue():
     display.clear("black")
     display.draw.text((10, 10), "Home Menu", font=font_big2x, fill="white")
 
-    base_y = 40
+    base_y = 50
+    visible_lines = 6
     spacing = 30  # etwas mehr Platz für Checkboxen
+
+
+    scroll_offset = 0
+    if cursor > 5:
+        scroll_offset = (cursor - 5) * spacing + 10
+
 
     for i, label in enumerate(home_menu_entries):
         # Schriftgröße abhängig von Cursor
@@ -96,12 +103,15 @@ def home_menue():
             font = font_small
             box_width = 1
 
-        y = base_y + i * spacing
+        y = base_y + i * spacing - scroll_offset
+
+        if y < base_y - spacing or y > base_y + visible_lines * spacing:
+          continue
 
         display.draw.text((10, y), label, font=font, fill="white")
 
         if i > 6:
-            y -= 30 * i
+            base_y -= i * 30
 
 
         if data.get(home_menu_entries[i]) == True:
@@ -159,16 +169,3 @@ main()
 
 # Starten
 display.mainloop()
-
-def niu ():
-
-    # Einstellung speichern
-    settings = {"dark_mode": True}
-    with open("settings.json", "w") as f:
-      json.dump(settings, f)
-
-    # Einstellung laden
-    with open("settings.json", "r") as f:
-        loaded_settings = json.load(f)
-
-    print(loaded_settings["dark_mode"])  # Gibt: True aus

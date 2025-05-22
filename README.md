@@ -52,7 +52,10 @@ To connect top and bottom layers, it is best to use **vias**:
 </details>
 
 <details>
-<summary></summary>
+<summary>Electrical characteristics</summary>
+The bord is equipped with a 5.0V supply over the USB connector. This power supply is directly dependent on the used USB power supply and the 
+Additional bords should use ths lane due to more isolated and bigger pcb track's. 
+The raspberry pi is providing a 3.3V lane. The max current, while not being specified in the official documentation, is very limited. In case your need 3.3V please consider using a voltage regulator connected to the 5V lane.
 </details>
 
 <details>

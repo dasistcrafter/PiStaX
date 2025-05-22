@@ -59,5 +59,8 @@ The raspberry pi is providing a 3.3V lane. The max current, while not being spec
 </details>
 
 <details>
-<summary></summary>
+<summary>UI</summary>
+you can change your selection using the  *up/down* key.
+select with *enter*.
+go back to main with *esc*
 </details>

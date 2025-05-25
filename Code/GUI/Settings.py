@@ -29,6 +29,8 @@ main_menu_entries = [
 ]
 
 home_menu_entries = [
+    "bluetooth_on",
+    "wifi_on",
     "CPU_usage",
     "Ram_usage",
     "CPU_temp",

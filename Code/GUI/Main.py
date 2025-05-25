@@ -4,10 +4,8 @@ import json
 import psutil
 import datetime
 
-#time config
-x = datetime.datetime.now()
-
-font_stats = ImageFont.truetype("arial.ttf",14)
+# time config
+font_stats = ImageFont.truetype("arial.ttf", 14)
 font_time = ImageFont.truetype("arialbd.ttf", 14)
 
 # load settings data
@@ -17,15 +15,14 @@ with open("settings.json", "r") as f:
 display = SimDisplay()
 select = 0  # Ausgewählter Button (0–4)
 stats_shown = 0
-stats_y = 60
 
 def draw_buttons():
     display.clear("black")
 
     button_width = 40
     spacing = 6
-    total_width = 5 * button_width + 4 * spacing 
-    start_x = (240 - total_width) // 2 
+    total_width = 5 * button_width + 4 * spacing
+    start_x = (240 - total_width) // 2
 
     for i in range(5):
         x = start_x + i * (button_width + spacing)
@@ -38,45 +35,56 @@ def draw_buttons():
             width=line_width
         )
 
-    # Zeige die Stats mit an
+    # Show the stats
     show_stats()
 
-    # Display aktualisieren
+    # Update display
     display.show()
 
 def show_stats():
     global stats_shown
     stats_shown = 1
-    time = x.strftime("%c")
-    # Beispielhafte Textanzeige, falls "Time" aktiviert ist
+    now = datetime.datetime.now()
+
+    # Example text output, if "Time" is enabled
     if data.get("Time") == True:
-        display.draw.text((175, 10), x.strftime("%X") , font=font_time, fill="white")
+        display.draw.text((175, 10), now.strftime("%X"), font=font_time, fill="white")
 
     if data.get("Date") == True:
-        display.draw.text((10, 10), x.strftime("%x"), font=font_time, fill="white")
+        display.draw.text((10, 10), now.strftime("%x"), font=font_time, fill="white")
 
     if data.get("CPU_usage") == True:
         stats_shown += 1
-        display.draw.text((10, (stats_shown * 20) + 100),f"CPU: {psutil.cpu_percent(interval=None)}%",font=font_stats,fill="white")
+        display.draw.text((10, (stats_shown * 20) + 100),
+                          f"CPU: {psutil.cpu_percent(interval=None)}%",
+                          font=font_stats, fill="white")
 
     if data.get("CPU_temp") == True:
-        frequency_all = psutil.cpu_freq(percpu=False)
-        frequency_current = frequency_all[17:23]
+        freq = psutil.cpu_freq(percpu=False)
         stats_shown += 1
-        display.draw.text((10,(stats_shown * 20) + 100 ), f"CPU frequency:  {frequency_current}", font=font_stats, fill="white")
-        stats_shown += 1
-        print(frequency_current)
-        print(psutil.cpu_freq(percpu=False))
-    
+        display.draw.text((10, (stats_shown * 20) + 100),
+                          f"CPU frequency: {freq.current:.1f} MHz",
+                          font=font_stats, fill="white")
+
     if data.get("RAM_usage") == True:
+        ram = psutil.virtual_memory()
         stats_shown += 1
-        display.draw.text((10,(stats_shown * 20) + 100 ), "RAM: XX%", font=font_stats, fill="white")
-        print(stats_y)
-    
+        display.draw.text((10, (stats_shown * 20) + 100),
+                          f"RAM: {ram.percent}%",
+                          font=font_stats, fill="white")
+
     if data.get("Storage_usage") == True:
+        disk = psutil.disk_usage('/')
         stats_shown += 1
-        display.draw.text((10,(stats_shown * 20) + 100 ), "Storage: XX %", font=font_stats, fill="white")
-        print(stats_y)
+        display.draw.text((10, (stats_shown * 20) + 100),
+                          f"Storage: {disk.percent}%",
+                          font=font_stats, fill="white")
+
+def show_weather():
+    #weather will come soon
+def show_location():
+    #location will come soon
+
 
 def on_key(event):
     global select
@@ -91,11 +99,16 @@ def on_key(event):
 
     draw_buttons()
 
-# Tasteneingaben aktivieren
+# Bind key events
 display.window.bind("<Key>", on_key)
 
-# Erste Anzeige
+# First draw
 draw_buttons()
 
-# Starten
+# Automatic redraw loop
+def update_loop():
+    draw_buttons()
+    display.window.after(1000, update_loop)
+
+update_loop()
 display.mainloop()

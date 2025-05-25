@@ -1,1 +1,12 @@
-{"CPU_usage": true, "Ram_usage": true, "CPU_temp": true, "Storage_usage": true, "Date": true, "Time": true, "Location": true, "weather": true}
+{
+    "bluetooth_on": true,
+    "wifi_on": true,
+    "CPU_usage": true,
+    "Ram_usage": true,
+    "CPU_temp": true,
+    "Storage_usage": true,
+    "Date": true,
+    "Time": true,
+    "Location": true,
+    "weather": true
+}

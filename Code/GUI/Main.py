@@ -2,8 +2,10 @@ from display_sim import SimDisplay
 from PIL import ImageFont
 import json
 import psutil
+import datetime
 
-
+#time config
+x = datetime.datetime.now()
 
 font_stats = ImageFont.truetype("arial.ttf",14)
 font_time = ImageFont.truetype("arialbd.ttf", 14)
@@ -45,12 +47,13 @@ def draw_buttons():
 def show_stats():
     global stats_shown
     stats_shown = 1
+    time = x.strftime("%c")
     # Beispielhafte Textanzeige, falls "Time" aktiviert ist
     if data.get("Time") == True:
-        display.draw.text((185, 10), "MM:HH", font=font_time, fill="white")
+        display.draw.text((175, 10), x.strftime("%X") , font=font_time, fill="white")
 
     if data.get("Date") == True:
-        display.draw.text((10, 10), "DD:MM:YYYY", font=font_time, fill="white")
+        display.draw.text((10, 10), x.strftime("%x"), font=font_time, fill="white")
 
     if data.get("CPU_usage") == True:
         stats_shown += 1

@@ -3,18 +3,39 @@ from PIL import ImageFont
 import json
 import psutil
 import datetime
+import subprocess
+import socket
+import time
 
-# time config
+# Fonts
 font_stats = ImageFont.truetype("arial.ttf", 14)
 font_time = ImageFont.truetype("arialbd.ttf", 14)
 
-# load settings data
+#key tracking
+last_key = None
+ipshow = False
+
+# Load config
 with open("settings.json", "r") as f:
     data = json.load(f)
 
 display = SimDisplay()
-select = 0  # Ausgewählter Button (0–4)
+select = 0
 stats_shown = 0
+
+# Connection checks
+def is_wifi_connected():
+    return bool(subprocess.getoutput("iwgetid -r"))
+
+def is_bluetooth_on():
+    return "UP RUNNING" in subprocess.getoutput("hciconfig")
+
+def has_ip_address():
+    try:
+        socket.gethostbyname("google.com")
+        return True
+    except socket.gaierror:
+        return False
 
 def draw_buttons():
     display.clear("black")
@@ -35,23 +56,35 @@ def draw_buttons():
             width=line_width
         )
 
-    # Show the stats
+    top_bar()
     show_stats()
-
-    # Update display
     display.show()
 
-def show_stats():
-    global stats_shown
-    stats_shown = 1
+def top_bar():
     now = datetime.datetime.now()
 
-    # Example text output, if "Time" is enabled
     if data.get("Time") == True:
         display.draw.text((175, 10), now.strftime("%X"), font=font_time, fill="white")
 
     if data.get("Date") == True:
         display.draw.text((10, 10), now.strftime("%x"), font=font_time, fill="white")
+
+    if data.get("Time") == True:
+        if is_wifi_connected():
+            display.draw.text((75, 10), "WiFi", font=font_time, fill="white")
+
+        if is_bluetooth_on():
+            display.draw.text((100, 10), "BT", font=font_time, fill="white")
+
+        if has_ip_address():
+            display.draw.text((125, 10), "IP", font=font_time, fill="white")
+
+
+
+
+def show_stats():
+    global stats_shown
+    stats_shown = 0
 
     if data.get("CPU_usage") == True:
         stats_shown += 1
@@ -76,36 +109,59 @@ def show_stats():
     if data.get("Storage_usage") == True:
         disk = psutil.disk_usage('/')
         stats_shown += 1
+
         display.draw.text((10, (stats_shown * 20) + 100),
-                          f"Storage: {disk.percent}%",
-                          font=font_stats, fill="white")
+                        f"Storage: {disk.percent}%",
+                        font=font_stats, fill="white")
+            
+        
+    if data.get("show_ip") == True:
+        stats_shown += 1
+        if ipshow == False:
+            display.draw.text((10, (stats_shown * 20) + 100),
+                         f"press \"I\"+\"P\" to reveal IP" ,
+                          font=font_stats, fill="white")        
+        else:
 
-def show_weather():
-    #weather will come soon
-def show_location():
-    #location will come soon
+            display.draw.text((10, (stats_shown * 20) + 100),
+                            f"Test Ip" ,
+                            font=font_stats, fill="white")
+        
+                                 
 
-
+    
 def on_key(event):
-    global select
-    key = event.keysym
+    global select, last_key, ipshow
 
-    if key == "Left":
+    key = event.keysym.lower()
+
+    if key == "left":
         select = max(0, select - 1)
-    elif key == "Right":
+    elif key == "right":
         select = min(4, select + 1)
-    elif key == "Return":
-        print(f"⏎ Button {select + 1} gedrückt!")
+    elif key == "return":
+        print(f"⏎ Button {select + 1} pressed!")
 
+    # Check for 'i' then 'p'
+    if last_key == "i" and key == "p":
+        ipshow = True
+        display.window.after(2000, lambda: set_ipshow(False))  # auto-hide IP after 2 sec
+
+    last_key = key
     draw_buttons()
 
-# Bind key events
+def set_ipshow(value):
+    global ipshow
+    ipshow = value
+    draw_buttons()
+
+# Bind keyboard
 display.window.bind("<Key>", on_key)
 
-# First draw
+# Initial draw
 draw_buttons()
 
-# Automatic redraw loop
+# Auto update loop
 def update_loop():
     draw_buttons()
     display.window.after(1000, update_loop)

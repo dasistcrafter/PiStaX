@@ -15,6 +15,8 @@ display = SimDisplay()
 with open("settings.json", "r") as f:
     data = json.load(f)
 
+
+
 # Menüeinträge
 main_menu_entries = [
     "Test1",
@@ -35,7 +37,7 @@ home_menu_entries = [
     "Storage_usage",
     "Time",
     "Date",
-    "show_ip_time",
+    "ip_timeout",
     "Location",
     "weather"
 ]
@@ -84,7 +86,7 @@ def home_menue():
 
     base_y = 50
     visible_lines = 6
-    spacing = 30  # etwas mehr Platz für Checkboxen
+    spacing = 30 
 
 
     scroll_offset = 0
@@ -93,7 +95,7 @@ def home_menue():
 
 
     for i, label in enumerate(home_menu_entries):
-        # Schriftgröße abhängig von Cursor
+        
         if i == cursor:
             font = font_big
             box_width = 3
@@ -120,7 +122,13 @@ def home_menue():
         else:
             fill_color = "black"
 
-        display.draw.rectangle((200, y + 6, 220, y + 26), outline="white", fill=fill_color, width=box_width)
+        if i != 6:
+            display.draw.rectangle((200, y + 6, 220, y + 26), outline="white", fill=fill_color, width=box_width)
+        
+        else:
+            global show_ip_time_current
+            show_ip_time_current = data.get("ip_timeout")
+            display.draw.text((160, y+4), f"{show_ip_time_current} sec", font=font_normal, fill="white")
 
 
     display.show()
@@ -132,6 +140,14 @@ def on_key(event):
 
     key = event.keysym
 
+    if key in ["Left", "Right"]:
+        if current_screen == home_menue and cursor == 6:
+            key_name = home_menu_entries[cursor]
+            if key == "Left":
+                data[key_name] = max(1, data.get(key_name, 0) - 1)
+            elif key == "Right":
+                data[key_name] = min(20, data.get(key_name, 0) + 1)
+        
     if key == "Up":
         cursor = max(0, cursor - 1)
 

@@ -1,4 +1,5 @@
 import json
+from tkinter import Image
 from display_sim import SimDisplay
 from PIL import ImageFont
 
@@ -14,6 +15,9 @@ display = SimDisplay()
 #load settings
 with open("settings.json", "r") as f:
     data = json.load(f)
+
+#load image
+imgWifi = Image.open("Wifi_logo.png").convert("RGBA")
 
 
 
@@ -37,6 +41,7 @@ home_menu_entries = [
     "Storage_usage",
     "Time",
     "Date",
+    "show_ip",
     "ip_timeout",
     "Location",
     "weather"
@@ -113,7 +118,7 @@ def home_menue():
 
         display.draw.text((10, y), label, font=font, fill="white")
 
-        if i > 6:
+        if i > 7:
             base_y -= i * 30
 
 
@@ -122,14 +127,44 @@ def home_menue():
         else:
             fill_color = "black"
 
-        if i != 6:
+        if i != 7:
             display.draw.rectangle((200, y + 6, 220, y + 26), outline="white", fill=fill_color, width=box_width)
         
         else:
+            global ip_sub_text_start
+            ip_sub_text_start = " "
+            global ip_sub_text_end
+            ip_sub_text_end = " "
+            if data.get("ip_timeout") == True:
+                ip_sub_text_start = " "
+                ip_sub_text_end = " "
+            if data.get("ip_timeout") == False:
+                ip_sub_text_start = " "
+                ip_sub_text_end = " "
+            if data.get("ip_timeout") == 25:
+                ip_sub_text_start = "<"
+                ip_sub_text_end = " "
+            if data.get("ip_timeout") == 1:
+                ip_sub_text_start = " "
+                ip_sub_text_end = ">"
+            if data.get("ip_timeout") <= 24:
+                if data.get("ip_timeout") >= 2:
+                    ip_sub_text_start = "<"
+                    ip_sub_text_end = ">"
+            if data.get("ip_timeout") >= 2:
+                if data.get("ip_timeout") <= 24:
+                    ip_sub_text_start = "<"
+                    ip_sub_text_end = ">"
+
             global show_ip_time_current
             show_ip_time_current = data.get("ip_timeout")
-            display.draw.text((160, y+4), f"{show_ip_time_current} sec", font=font_normal, fill="white")
+            display.draw.text((160, y+4), f"{ip_sub_text_start} {show_ip_time_current} {ip_sub_text_end}", font=font_normal, fill="white")
+            print(ip_sub_text_end)
+            print(ip_sub_text_start)
 
+
+
+            
 
     display.show()
 
@@ -141,13 +176,14 @@ def on_key(event):
     key = event.keysym
 
     if key in ["Left", "Right"]:
-        if current_screen == home_menue and cursor == 6:
+        if current_screen == home_menue and cursor == 7:
             key_name = home_menu_entries[cursor]
             if key == "Left":
                 data[key_name] = max(1, data.get(key_name, 0) - 1)
             elif key == "Right":
-                data[key_name] = min(20, data.get(key_name, 0) + 1)
-        
+                data[key_name] = min(25, data.get(key_name, 0) + 1)
+
+    save_settings()
     if key == "Up":
         cursor = max(0, cursor - 1)
 

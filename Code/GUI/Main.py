@@ -1,15 +1,33 @@
 from display_sim import SimDisplay
 from PIL import ImageFont
+from PIL import Image
 import json
 import psutil
 import datetime
 import subprocess
 import socket
-import time
 
 # Fonts
 font_stats = ImageFont.truetype("arial.ttf", 14)
 font_time = ImageFont.truetype("arialbd.ttf", 14)
+
+#wifi logo
+Wifi_logo = [
+    (76,13), (76,14), (77,13), (77,16), (77,17),
+    (78,12), (78,15), (78,16), (79,12), (79,15),
+    (79,18), (79,19), (80,12), (80,15), (80,18),
+    (81,12), (81,15), (81,18), (81,20), (81,21),
+    (82,12), (82,15), (82,18), (82,20), (82,21),
+    (83,12), (83,15), (83,18), (84,12), (84,15),
+    (84,18), (84,19), (85,12), (85,15), (85,16),
+    (86,13), (86,16), (86,17), (87,13), (87,14)
+]
+
+
+#get IPv4
+hostname = socket.gethostname()
+IPAddr = socket.gethostbyname(hostname)
+
 
 #key tracking
 last_key = None
@@ -22,6 +40,8 @@ with open("settings.json", "r") as f:
 display = SimDisplay()
 select = 0
 stats_shown = 0
+
+
 
 # Connection checks
 def is_wifi_connected():
@@ -36,7 +56,7 @@ def has_ip_address():
         return True
     except socket.gaierror:
         return False
-
+    
 def draw_buttons():
     display.clear("black")
 
@@ -71,10 +91,11 @@ def top_bar():
 
     if data.get("Time") == True:
         if is_wifi_connected():
-            display.draw.text((75, 10), "WiFi", font=font_time, fill="white")
+            for x, y in Wifi_logo:
+                display.draw.point((x, y), fill="white")
 
         if is_bluetooth_on():
-            display.draw.text((100, 10), "BT", font=font_time, fill="white")
+            display.draw.text((100, 10), "BT", font=font_time)
 
         if has_ip_address():
             display.draw.text((125, 10), "IP", font=font_time, fill="white")
@@ -118,21 +139,24 @@ def show_stats():
     if data.get("show_ip") == True:
         stats_shown += 1
         if ipshow == False:
-            display.draw.text((10, (stats_shown * 20) + 100),
-                         f"press \"I\"+\"P\" to reveal IP" ,
-                          font=font_stats, fill="white")        
+            if data.get("ip_timeout") != False:
+                display.draw.text((10, (stats_shown * 20) + 100),
+                            f"press \"I\"+\"P\" to reveal IP" ,
+                            font=font_stats, fill="white")        
         else:
-
+            display.draw.text((10, (stats_shown * 20) + 100),
+                            IPAddr ,
+                            font=font_stats, fill="white")
+        if data.get("ip_timeout") == False:
             display.draw.text((10, (stats_shown * 20) + 100),
                             f"Test Ip" ,
                             font=font_stats, fill="white")
-        
                                  
 
     
 def on_key(event):
-    global select, last_key, ipshow
-
+    global select, last_key, ipshow, ipshow_time
+    ipshow_time = data.get("ip_timeout") * 1000 #convert the seconds to ms
     key = event.keysym.lower()
 
     if key == "left":
@@ -142,10 +166,12 @@ def on_key(event):
     elif key == "return":
         print(f"⏎ Button {select + 1} pressed!")
 
-    # Check for 'i' then 'p'
+    # Check for i then p
     if last_key == "i" and key == "p":
-        ipshow = True
-        display.window.after(2000, lambda: set_ipshow(False))  # auto-hide IP after 2 sec
+        if data.get("ip_timeout") != False:
+            if data.get("ip_timeout") != True:
+                ipshow = True
+                display.window.after(ipshow_time, lambda: set_ipshow(False))
 
     last_key = key
     draw_buttons()

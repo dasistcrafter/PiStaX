@@ -1,5 +1,6 @@
 # display_sim.py
 from PIL import Image, ImageDraw, ImageTk
+from PIL import Image
 import tkinter as tk
 
 WIDTH, HEIGHT = 240, 240

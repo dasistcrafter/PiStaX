@@ -1,1 +1,1 @@
-{"CPU_usage": true, "Ram_usage": true, "CPU_temp": true, "Storage_usage": true, "Date": true, "Time": true, "ip_timeout": false, "Location": false, "weather": true}
+{"CPU_usage": true, "Ram_usage": true, "CPU_temp": true, "Storage_usage": true, "Date": true, "Time": true, "show_ip": true, "ip_timeout": 2, "Location": false, "weather": true}
